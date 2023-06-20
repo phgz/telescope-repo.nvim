@@ -14,6 +14,10 @@ function M.add_project(path)
     project_paths[abs_path] = true
 end
 
+function M.get_project_paths()
+    return vim.tbl_keys(project_paths)
+end
+
 -- Find the best suited project path. Can be passed a file
 local function find_project(path_or_file)
     local buf_path = Path:new(path_or_file)
@@ -34,7 +38,7 @@ function M.setup()
     -- Ensure we create only one autocmd, even if the function is called multiple times
     local autocmd_group = vim.api.nvim_create_augroup("telescope_repo_lcd", { clear = true })
 
-    vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+    vim.api.nvim_create_autocmd({ "VimEnter", "BufEnter" }, {
         callback = function()
             local path_or_file = vim.fn.expand("%")
             local project_path = find_project(path_or_file)

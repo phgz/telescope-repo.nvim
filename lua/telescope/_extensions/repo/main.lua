@@ -178,14 +178,18 @@ local function call_picker(list_opts, command, prompt_title_supplement, user_opt
 
                     if type == "default" then
                         actions._close(prompt_bufnr, false)
-                        vim.schedule(function()
-                            project_files(vim.tbl_extend("force", user_opts, { cwd = dir }))
-                        end)
+                        if user_opts.post_action then
+                            user_opts.post_action(dir)
+                        else
+                            vim.schedule(function()
+                                project_files(vim.tbl_extend("force", user_opts, { cwd = dir }))
+                            end)
+                        end
                     end
                     if type == "vertical" then
                         actions._close(prompt_bufnr, false)
                         vim.schedule(function()
-                            project_live_grep(vim.tbl_extend("force", list_opts, { cwd = dir }))
+                            project_live_grep(vim.tbl_extend("force", user_opts, { cwd = dir }))
                         end)
                         return
                     end
@@ -219,7 +223,7 @@ M.list = function(opts)
     list_opts.entry_maker = t_utils.get_lazy_default(list_opts.entry_maker, gen_from_fd, list_opts)
     local fd_command = list.prepare_command(list_opts)
 
-    call_picker(list_opts, fd_command, " (built on the fly)", common_opts)
+    call_picker(list_opts, fd_command, common_opts.prompt or " (built on the fly)", common_opts)
 end
 
 return M
