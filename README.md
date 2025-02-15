@@ -24,7 +24,7 @@ end_insert -->
 # 🦘 telescope-repo.nvim: jump around the repositories in your filesystem, without any setup
 <!-- end_remove -->
 
-![Neovim version](https://img.shields.io/badge/Neovim-0.7+-57A143?style=flat&logo=neovim) [![](https://img.shields.io/badge/powered%20by-riss-lightgrey)](https://cj.rs/riss) ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/cljoly/telescope-repo.nvim?color=darkgreen&sort=semver)
+![Neovim version](https://img.shields.io/badge/Neovim-0.7+-57A143?style=flat&logo=neovim) [![](https://img.shields.io/badge/powered%20by-riss-lightgrey)](https://cj.rs/riss) ![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/cljoly/telescope-repo.nvim?color=darkgreen&sort=semver) ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fd.cj.rs%2Fnvim%2Ftelescope-repo.json&cacheSeconds=90000)
 
 <!-- insert
 {{< rawhtml >}}
@@ -250,7 +250,19 @@ Is your favorite SCM missing? It should be straightforward to support it by chan
 
 This relies on a `locate` command to find repositories. This should be much faster than the `list` command, as it relies on a pre-built index but results may be stalled.
 
-*Note*: at this point, the plugin does not manage index update. Updating the index often requires to run a command like `updatedb` as root.
+#### General Notes for `updatedb`
+
+At this point, the plugin does not manage index update.
+
+Updating the index often requires to run a command like `updatedb` as root. If the cached_list command does not return anything, it might be due to the configuration of the `updatedb` command. You can run `sudo updatedb -v --debug-pruning` to see if the directories you expect are indexed. You should see lines like the following if a repository named "rusqlie_migration" is indexed:
+
+```
+/home/cjoly/worktree/rusqlite/rusqlite_migration/Cargo.toml
+/home/cjoly/worktree/rusqlite/rusqlite_migration/README.md
+/home/cjoly/worktree/rusqlite/rusqlite_migration/.git
+```
+
+You might need to tweak the settings in the file `/etc/updatedb.conf`. The [corresponding manpage](https://man.archlinux.org/man/updatedb.conf.5) may be useful as well.
 
 #### Notes for MacOS
 
@@ -286,7 +298,8 @@ If nothing is shown, even after a little while, try this:
 lua require'telescope'.extensions.repo.cached_list{locate_opts={"-d", vim.env.HOME .. "/locatedb"}}
 ```
 
-> *Note*: Installation and use of the plugin on systems other than GNU/Linux is community-maintained. Don't hesitate to open [a discussion][discuss-qa] or [a pull-request][pr] if something is not working!
+> [!WARNING]
+> Installation and use of the plugin on systems other than GNU/Linux is community-maintained. Don't hesitate to open [a discussion][discuss-qa] or [a pull-request][pr] if something is not working!
 
 [discuss-qa]: https://github.com/cljoly/telescope-repo.nvim/discussions/categories/q-a
 [pr]: https://github.com/cljoly/telescope-repo.nvim/pulls
